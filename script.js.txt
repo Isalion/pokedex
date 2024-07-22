@@ -1,0 +1,37 @@
+document.getElementById('searchButton').addEventListener('click', () => {
+    const query = document.getElementById('search').value.toLowerCase();
+    fetchPokemon(query);
+});
+
+document.getElementById('search').addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') {
+        const query = document.getElementById('search').value.toLowerCase();
+        fetchPokemon(query);
+    }
+});
+
+async function fetchPokemon(query) {
+    try {
+        const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${query}`);
+        if (!response.ok) throw new Error('Pokémon not found');
+        const data = await response.json();
+        displayPokemon(data);
+    } catch (error) {
+        document.getElementById('pokemonDetails').innerHTML = '<p>Pokémon not found</p>';
+    }
+}
+
+function displayPokemon(pokemon) {
+    const pokemonDetails = document.getElementById('pokemonDetails');
+    pokemonDetails.innerHTML = `
+        <div class="pokemon-image">
+            <img src="${pokemon.sprites.front_default}" alt="${pokemon.name}">
+        </div>
+        <div class="pokemon-info">
+            <h2>${pokemon.name.charAt(0).toUpperCase() + pokemon.name.slice(1)}</h2>
+            <p><strong>Height:</strong> ${pokemon.height / 10} m</p>
+            <p><strong>Weight:</strong> ${pokemon.weight / 10} kg</p>
+            <p><strong>Types:</strong> ${pokemon.types.map(type => type.type.name).join(', ')}</p>
+        </div>
+    `;
+}
